@@ -1,13 +1,18 @@
 
 ### Python 2.7.5
 ### Ionic 1.2.8
-import subprocess, os, sys
+import subprocess, os, sys, glob
 from bs4 import BeautifulSoup
-
 ### take arguments.. need project name, source
 ### need to make sure all the files have the same name
 
 # name = raw_input('Enter project name: ')
+
+
+
+
+
+
 name = "test"
 
 def change_dir(dir_name):
@@ -36,6 +41,35 @@ os.chdir(originalWorkingDiretory)
 
 
 copy_tempaltes(name)
+
+
+####TODO: for each image in source
+##### add newPage in css --done
+##### add newPage's state in route.js
+##### add newPage.html
+##### add newPage.js
+##### add new line for src in newPage.js 
+
+def parse_file_path(full_name):
+	basename, extension = os.path.splitext(file_fullname)
+	directory, filename = os.path.split(basename)
+	return { "directory": directory, "filename": filename, "extension": extension}
+
+def getCSStemplate(file_info):
+	return '.background-' + file_info["filename"] + ' {\n' \
+				'background-image:url("../img/' + file_info["filename"] + file_info["extension"] + '\");\n' \
+				'background-repeat: no-repeat;\n' \
+				'background-size: 100%;\n' \
+				'width: 1024px;\n' \
+				'height: 625px;\n' \
+				'position: relative;\n' \
+			'}'
+
+for file_fullname in glob.glob(os.path.join(originalWorkingDiretory + "/src", '*.png')):
+	file_info = parse_file_path(file_fullname)
+	with open("test/www/css/app.css", "a") as myfile:
+		myfile.write(getCSStemplate(file_info))
+
 change_dir(name)
 bower()
 build()
