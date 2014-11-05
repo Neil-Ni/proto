@@ -55,7 +55,7 @@ def parse_file_path(full_name):
 	directory, filename = os.path.split(basename)
 	return { "directory": directory, "filename": filename, "extension": extension}
 
-def getCSStemplate(file_info):
+def get_CSS_template(file_info):
 	return '.background-' + file_info["filename"] + ' {\n' \
 				'background-image:url("../img/' + file_info["filename"] + file_info["extension"] + '\");\n' \
 				'background-repeat: no-repeat;\n' \
@@ -64,11 +64,23 @@ def getCSStemplate(file_info):
 				'height: 625px;\n' \
 				'position: relative;\n' \
 			'}'
+def append_CSS_to_project(file_info):
+	with open("test/www/css/app.css", "a") as myfile:
+		myfile.write(getCSStemplate(file_info))
+
+def add_new_route_to_project(file_info):
+	print file_info
+def add_new_html_to_project(file_info): 
+	print file_info
+def add_new_js_to_project(file_info):
+	print file_info
+def add_new_js_src_to_project_index(file_info):
+	print file_info
 
 for file_fullname in glob.glob(os.path.join(originalWorkingDiretory + "/src", '*.png')):
 	file_info = parse_file_path(file_fullname)
-	with open("test/www/css/app.css", "a") as myfile:
-		myfile.write(getCSStemplate(file_info))
+	appendCSStoProject(file_info)
+
 
 change_dir(name)
 bower()
