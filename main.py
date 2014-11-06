@@ -2,10 +2,9 @@
 ### Python 2.7.5
 ### Ionic 1.2.8
 import subprocess, os, sys, glob
-from bs4 import BeautifulSoup
-### take arguments.. need project name, source
-### need to make sure all the files have the same name
 
+###TODO: 1. organize code in classes
+###TODO: 2. make sure the raw_input takes actual name
 # name = raw_input('Enter project name: ')
 
 name = "test"
