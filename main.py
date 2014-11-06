@@ -60,7 +60,7 @@ def copy_image_to_project(file_info):
 def get_html_template(file_info, nextState):
 	ui_sref_string = ''
 	if nextState:
-		ui_sref_string = 'ui-sref=' + nextState
+		ui_sref_string = ' ui-sref=\'' + nextState + '\''
 	return '<ion-view>\n' \
 				'\t<ion-content class="has-header">\n' \
 					'\t\t<div class="background-{{currentState}}"' + ui_sref_string + '>\n' \
