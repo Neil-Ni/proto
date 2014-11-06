@@ -34,10 +34,10 @@ def copy_tempaltes(dir_name):
 	subprocess.call(["cp", "-r", "www", name])
 
 originalWorkingDiretory = os.getcwd()
-start_project(name)
-change_dir(name)
-add_platform()
-os.chdir(originalWorkingDiretory)
+# start_project(name)
+# change_dir(name)
+# add_platform()
+# os.chdir(originalWorkingDiretory)
 
 
 copy_tempaltes(name)
@@ -45,9 +45,9 @@ copy_tempaltes(name)
 
 ####TODO: for each image in source
 ##### add newPage in css --done
+##### add newPage.html --done
+##### add newPage.js --done
 ##### add newPage's state in route.js
-##### add newPage.html
-##### add newPage.js
 ##### add new line for src in newPage.js 
 
 def parse_file_path(full_name):
@@ -57,35 +57,66 @@ def parse_file_path(full_name):
 
 def get_CSS_template(file_info):
 	return '.background-' + file_info["filename"] + ' {\n' \
-				'background-image:url("../img/' + file_info["filename"] + file_info["extension"] + '\");\n' \
-				'background-repeat: no-repeat;\n' \
-				'background-size: 100%;\n' \
-				'width: 1024px;\n' \
-				'height: 625px;\n' \
-				'position: relative;\n' \
-			'}'
+				'\tbackground-image:url("../img/' + file_info["filename"] + file_info["extension"] + '\");\n' \
+				'\tbackground-repeat: no-repeat;\n' \
+				'\tbackground-size: 100%;\n' \
+				'\twidth: 1024px;\n' \
+				'\theight: 625px;\n' \
+				'\tposition: relative;\n' \
+			'}\n'
 def append_CSS_to_project(file_info):
+	css = get_CSS_template(file_info)
 	with open("test/www/css/app.css", "a") as myfile:
-		myfile.write(getCSStemplate(file_info))
+		myfile.write(css)
+def copy_image_to_project(file_info):
+	subprocess.call(["cp", file_info["directory"] + '/' + file_info["filename"] + file_info["extension"], "test/www/img/"])
+
+
+
+def get_html_template(file_info):
+	return '<ion-view>\n' \
+				'\t<ion-content class="has-header">\n' \
+					'\t\t<div class="background-{{currentState}}" ng-click="nextState()">\n' \
+					'\t\t</div>\n' \
+				'\t</ion-content>\n' \
+			'</ion-view>'
+
+def add_new_html_to_project(file_info): 
+	filename = file_info["filename"]
+	html = get_html_template(file_info)
+	with open("test/www/templates/main/" + filename + ".html", "w") as myfile:
+		myfile.write(html);
+
+def get_js_template(file_info):
+	filename = file_info["filename"]
+	return 'angular.module(\'starter\')\n' \
+				'\t.controller(\'' + filename+ 'Ctrl\', function($scope, $state) {\n' \
+				'\t});' \
+
+def add_new_js_to_project(file_info):
+	filename = file_info["filename"]
+	js = get_js_template(file_info)
+	with open("test/www/js/controllers/main/" + filename + ".js", "w") as myfile:
+		myfile.write(js);
 
 def add_new_route_to_project(file_info):
-	print file_info
-def add_new_html_to_project(file_info): 
-	print file_info
-def add_new_js_to_project(file_info):
 	print file_info
 def add_new_js_src_to_project_index(file_info):
 	print file_info
 
 for file_fullname in glob.glob(os.path.join(originalWorkingDiretory + "/src", '*.png')):
 	file_info = parse_file_path(file_fullname)
-	appendCSStoProject(file_info)
+	append_CSS_to_project(file_info)
+	copy_image_to_project(file_info)
+	add_new_html_to_project(file_info)
+	add_new_js_to_project(file_info)
+	## copy image to image file
 
 
-change_dir(name)
-bower()
-build()
-emulate()
+# change_dir(name)
+# bower()
+# build()
+# emulate()
 
 #### replace div in index.html
 # def body_template():
