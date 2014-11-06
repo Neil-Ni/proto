@@ -54,20 +54,24 @@ def append_CSS_to_project(file_info):
 	css = get_CSS_template(file_info)
 	with open("test/www/css/app.css", "a") as myfile:
 		myfile.write(css)
+
 def copy_image_to_project(file_info):
 	subprocess.call(["cp", file_info["directory"] + '/' + file_info["filename"] + file_info["extension"], "test/www/img/"])
 
-def get_html_template(file_info):
+def get_html_template(file_info, nextState):
+	ui_sref_string = ''
+	if nextState:
+		ui_sref_string = 'ui-sref=' + nextState
 	return '<ion-view>\n' \
 				'\t<ion-content class="has-header">\n' \
-					'\t\t<div class="background-{{currentState}}" ng-click="nextState()">\n' \
+					'\t\t<div class="background-{{currentState}}"' + ui_sref_string + '>\n' \
 					'\t\t</div>\n' \
 				'\t</ion-content>\n' \
 			'</ion-view>'
 
-def add_new_html_to_project(file_info): 
+def add_new_html_to_project(file_info, nextState): 
 	filename = file_info["filename"]
-	html = get_html_template(file_info)
+	html = get_html_template(file_info, nextState)
 	with open("test/www/templates/main/" + filename + ".html", "w") as myfile:
 		myfile.write(html);
 
@@ -105,7 +109,7 @@ def add_new_route_to_project(file_info):
 		if line.find("$urlRouterProvider.otherwise") > -1:
 			js += '\t$stateProvider.state(\'' + filename + '\', {\n' \
         				'\t\turl: \'/' + filename + '\',\n'  \
-        				'\t\ttemplateUrl: \'templates/main/' + filename + '\',\n' \
+        				'\t\ttemplateUrl: \'templates/main/' + filename + '.html\',\n' \
         				'\t\tcontroller: \'' + filename + 'Ctrl\'\n' \
     				'\t});\n' 
 		js += line;
@@ -114,14 +118,38 @@ def add_new_route_to_project(file_info):
 	with open("test/www/js/routes.js", "w") as myfile:
 		myfile.write(js);
 
-for file_fullname in glob.glob(os.path.join(originalWorkingDiretory + "/src", '*.png')):
-	file_info = parse_file_path(file_fullname)
+src_files = [parse_file_path(file_fullname) for file_fullname in glob.glob(os.path.join(originalWorkingDiretory + "/src", '*.png'))];
+counter = 0;
+for file_info in src_files:
+	counter += 1
 	append_CSS_to_project(file_info)
 	copy_image_to_project(file_info)
-	add_new_html_to_project(file_info)
+	nextState = None
+	if len(src_files) > counter:
+		next_file_info = src_files[counter]
+		nextState = next_file_info["filename"]
+	add_new_html_to_project(file_info, nextState)
 	add_new_js_to_project(file_info)
-	add_new_js_src_to_project_index(file_info) 
+	add_new_js_src_to_project_index(file_info)
 	add_new_route_to_project(file_info)
+
+def reset_default_state(file_info):
+	js = "";
+	filename = file_info["filename"]
+	f = open('test/www/js/routes.js');
+	for line in f.readlines():
+		if line.find("$urlRouterProvider.otherwise") > -1:
+			js += '\t$urlRouterProvider.otherwise(\'/' + filename + '\')\n'
+		else: 
+			js += line;
+	f.close()
+	subprocess.call(["rm", "test/www/js/routes.js"])
+	with open("test/www/js/routes.js", "w") as myfile:
+		myfile.write(js);
+
+if len(src_files) > 1:
+	reset_default_state(src_files[0])
+
 
 change_dir(name)
 bower()
